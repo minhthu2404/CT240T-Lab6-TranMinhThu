@@ -1,0 +1,42 @@
+
+name: Java CI/CD Pipeline with Maven
+
+on:
+  push:
+    branches: ["main"]
+
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    name: Build, Test & Package
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Lấy mã nguồn
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # 2. Cài đặt JDK 17
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # 3. Biên dịch và kiểm thử
+      - name: Build and Test
+        run: mvn clean test
+
+      # 4. Đóng gói Fat JAR
+      - name: Package Application
+        run: mvn package -DskipTests
+
+      # 5. Lưu trữ file JAR
+      - name: Upload Runnable JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: runnable-application-jar
+          path: target/doc-cli-app-1.0-SNAPSHOT.jar
